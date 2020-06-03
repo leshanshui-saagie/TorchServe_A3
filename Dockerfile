@@ -1,6 +1,9 @@
 FROM ubuntu:18.04
 #ENV PYTHONUNBUFFERED TRUE
 
+# FOR DEBUGGING
+CMD ["ls", "-a"]
+
 ## Basic installation of jdk, git, python, curl ....
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
