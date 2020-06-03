@@ -37,11 +37,11 @@ RUN cd /serve \
     && cd model-archiver \
     && pip install .
 
+
 ## Create a user as model-server
 RUN useradd -m model-server && mkdir -p /home/model-server/tmp
 ## Configure entrypoint, change owner of created files to model-server
-COPY dockerd-entrypoint.sh /usr/local/bin/dockerd-entrypoint.sh
-RUN chmod +x /usr/local/bin/dockerd-entrypoint.sh && chown -R model-server /home/model-server
+RUN chown -R model-server /home/model-server
 COPY config.properties /home/model-server/config.properties
 RUN mkdir /home/model-server/model-store && chown -R model-server /home/model-server/model-store
 
@@ -49,14 +49,13 @@ RUN mkdir /home/model-server/model-store && chown -R model-server /home/model-se
 USER model-server
 WORKDIR /home/model-server
 # EXPOSE 2334 2335
-# RUN torchserve --start --ts-config /home/model-server/config.properties --model-store /home/model-server/model-store
 
-USER root
-ENV TEMP=/home/model-server/tmp
-# ENTRYPOINT ["/usr/local/bin/dockerd-entrypoint.sh"]
+CMD ["torchserve", "--start"]
 
-COPY serve-api.py /
-WORKDIR /
-
-EXPOSE 23333
-CMD ["gunicorn", "-b", "0.0.0.0:23333", "serve-api"]
+#RUN torchserve --start --ts-config /home/model-server/config.properties --model-store /home/model-server/model-store
+#USER root
+#ENV TEMP=/home/model-server/tmp
+#COPY serve-api.py /
+#WORKDIR /
+#EXPOSE 23333
+#CMD ["gunicorn", "-b", "0.0.0.0:23333", "serve-api"]
