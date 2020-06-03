@@ -49,11 +49,11 @@ RUN mkdir /home/model-server/model-store && chown -R model-server /home/model-se
 USER model-server
 WORKDIR /home/model-server
 # EXPOSE 2334 2335
-RUN torchserve --start --ts-config /home/model-server/config.properties --model-store /home/model-server/model-store
+# RUN torchserve --start --ts-config /home/model-server/config.properties --model-store /home/model-server/model-store
 
 USER root
 ENV TEMP=/home/model-server/tmp
-ENTRYPOINT ["/usr/local/bin/dockerd-entrypoint.sh"]
+# ENTRYPOINT ["/usr/local/bin/dockerd-entrypoint.sh"]
 
 COPY serve-api.py /
 WORKDIR /
