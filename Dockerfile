@@ -30,6 +30,14 @@ RUN pip install --no-cache-dir torchvision
 RUN pip install --no-cache-dir torchtext
 RUN pip install --no-cache-dir transformers
 
+USER root
+ENV TEMP=/home/model-server/tmp
+COPY serve-api.py /
+WORKDIR /
+EXPOSE 23333
+CMD ["gunicorn", "-b", "0.0.0.0:23333", "serve-api"]
+
+
 ## Torch Serve
 RUN cd / && git clone https://github.com/pytorch/serve.git
 RUN cd /serve \
@@ -51,9 +59,4 @@ WORKDIR /home/model-server
 # EXPOSE 2334 2335
 #CMD ["torchserve", "--start"]
 RUN torchserve --start --ts-config /home/model-server/config.properties --model-store /home/model-server/model-store
-USER root
-ENV TEMP=/home/model-server/tmp
-COPY serve-api.py /
-WORKDIR /
-EXPOSE 23333
-CMD ["gunicorn", "-b", "0.0.0.0:23333", "serve-api"]
+
