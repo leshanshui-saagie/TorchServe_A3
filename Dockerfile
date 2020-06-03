@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-ENV PYTHONUNBUFFERED TRUE
+#ENV PYTHONUNBUFFERED TRUE
 
 ## Basic installation of jdk, git, python, curl ....
 RUN apt-get update && \
