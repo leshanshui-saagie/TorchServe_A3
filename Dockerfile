@@ -49,6 +49,7 @@ RUN mkdir /home/model-server/model-store && chown -R model-server /home/model-se
 USER model-server
 WORKDIR /home/model-server
 # EXPOSE 2334 2335
+
 CMD ["torchserve", "--start"]
 
 #RUN torchserve --start --ts-config /home/model-server/config.properties --model-store /home/model-server/model-store
