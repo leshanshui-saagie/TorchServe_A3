@@ -4,16 +4,16 @@ FROM ubuntu:18.04
 ## Basic installation of jdk, git, python, curl ....
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-#    fakeroot \
-#    ca-certificates \
-#    dpkg-dev \
-#    g++ \
-#    python3-dev \
-#    openjdk-11-jdk \
+    fakeroot \
+    ca-certificates \
+    dpkg-dev \
+    g++ \
+    python3-dev \
+    openjdk-11-jdk \
     curl \
     vim \
     git \
-#    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/lib/apt/lists/* \
     && cd /tmp \
     && curl -O https://bootstrap.pypa.io/get-pip.py \
     && python3 get-pip.py
