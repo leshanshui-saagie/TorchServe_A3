@@ -1,4 +1,5 @@
-FROM ubuntu:18.04
+FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu16.04
+ARG PYTHON_VERSION=3.6
 #ENV PYTHONUNBUFFERED TRUE
 
 # FOR DEBUGGING
