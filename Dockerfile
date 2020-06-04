@@ -20,4 +20,18 @@ RUN apt-get update && \
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 RUN update-alternatives --install /usr/local/bin/pip pip /usr/local/bin/pip3 1
 
-CMD ["java", "-version"]
+## Flask utils
+RUN pip install Flask flask-restplus Flask-SSLify Flask-Admin gunicorn hdfs
+## Torch utils
+RUN pip install --no-cache-dir psutil
+RUN pip install --no-cache-dir torch
+RUN pip install --no-cache-dir torchvision
+RUN pip install --no-cache-dir torchtext
+RUN pip install --no-cache-dir transformers
+
+USER root
+ENV TEMP=/home/model-server/tmp
+COPY serve-api.py /
+WORKDIR /
+EXPOSE 23333
+CMD ["gunicorn", "-b", "0.0.0.0:23333", "serve-api"]
