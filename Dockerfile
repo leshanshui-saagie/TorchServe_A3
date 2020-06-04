@@ -12,6 +12,7 @@ RUN apt-get update && \
     openjdk-11-jdk \
     curl \
     vim \
+    git \ 
     && rm -rf /var/lib/apt/lists/* \
     && cd /tmp \
     && curl -O https://bootstrap.pypa.io/get-pip.py \
