@@ -51,6 +51,7 @@ WORKDIR /home/model-server
 #CMD ["torchserve", "--start"]
 RUN torchserve --start --ts-config /home/model-server/config.properties --model-store /home/model-server/model-store
 
+USER root
 ENV TEMP=/home/model-server/tmp
 COPY serve-api.py /
 WORKDIR /
