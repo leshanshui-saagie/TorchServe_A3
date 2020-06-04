@@ -1,15 +1,23 @@
-FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu16.04
-ARG PYTHON_VERSION=3.6
-RUN apt-get update && apt-get install -y --no-install-recommends \
-         build-essential \
-         cmake \
-         git \
-         curl \
-         vim \
-         ca-certificates \
-         libjpeg-dev \
-         libpng-dev &&\
-     rm -rf /var/lib/apt/lists/*     
+FROM ubuntu:18.04
+
 ENV PYTHONUNBUFFERED TRUE
-# FOR DEBUGGING
-CMD ["ls", "-a"]
+
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+    fakeroot \
+    ca-certificates \
+    dpkg-dev \
+    g++ \
+    python3-dev \
+    openjdk-11-jdk \
+    curl \
+    vim \
+    && rm -rf /var/lib/apt/lists/* \
+    && cd /tmp \
+    && curl -O https://bootstrap.pypa.io/get-pip.py \
+    && python3 get-pip.py
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+RUN update-alternatives --install /usr/local/bin/pip pip /usr/local/bin/pip3 1
+
+CMD ["java", "-version"]
