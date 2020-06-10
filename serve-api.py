@@ -40,10 +40,11 @@ def config():
     # Install library dependencies
     response = os.popen(
         """torch-model-archiver --model-name %s --version 1.0 --model-file ./model.py --serialized-file ./params.pt --handler ./handler.py && mv %s.mar /home/model-server/model-store/"""%(model_name, model_name)).read().strip()
-    
     current_app.hdfs_uri = hdfs_uri
     current_app.configured = True
+    logger.info('Uploaded model: %s'%model_name)
     return jsonify({'response': response}), 201
+
 
 @application.route('/raw', methods=['POST'])
 def raw():
@@ -52,9 +53,16 @@ def raw():
     or not 'command' in request.json:
         abort(400)
     response = os.popen(request.json['command']).read().strip()
+    logger.info('Visited raw page with bash command: \n%s'%request.json['command'])
     return jsonify({'response': response}), 201
 
 
+@application.route('/')
+def index():
+    logger.info('Visited index page')
+    return jsonify({'response': "index page"}), 201
+
+
 if __name__ == '__main__':
-    application.run(host='0.0.0.0', port=23333)
+    application.run(host='0.0.0.0', port=8079)
     
