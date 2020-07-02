@@ -15,19 +15,32 @@ application = Flask(__name__)
 
 @application.route('/config', methods=['POST'])
 def config():
-    # Read params from Json
-    if not request.json \
-    or not 'model_name' in request.json \
-    or not 'handler' in request.json  \
-    or not 'model' in request.json  \
-    or not 'params' in request.json:
+    # Read file paths from Json input
+    # Input as path of folder 
+    if request.json \
+    and 'folder_path' in request.json \
+    and 'model_name' in request.json \
+    and 'hdfs_uri' in request.json:
+        handler_file = request.json['folder_path'] +  "/handler.py"
+        model_file = request.json['folder_path'] +  "/model.py"
+        params_file = request.json['folder_path'] +  "/params.pt"
+        model_name = request.json['model_name']
+        hdfs_uri = request.json['hdfs_uri']
+    # Input as path of files 
+    elif request.json \
+    and 'hdfs_uri' in request.json \
+    and 'handler' in request.json  \
+    and 'params' in request.json \
+    and 'model' in request.json \
+    and 'model_name' in request.json:
+        handler_file = request.json['handler']
+        model_file = request.json['model']
+        params_file = request.json['params']
+        model_name = request.json['model_name']
+        hdfs_uri = request.json['hdfs_uri']
+    else:
         abort(400)
-
-    handler_file = request.json['handler']
-    model_file = request.json['model']
-    params_file = request.json['params']
-    model_name = request.json['model_name']
-    hdfs_uri = request.json['hdfs_uri']
+        
     logger.info('Read json configurations: OK!!')
     
     # Download files from HDFS
