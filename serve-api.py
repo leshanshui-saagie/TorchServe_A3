@@ -19,7 +19,7 @@ def config():
     # Directly pretrained 
     if request.json \
         and 'pretrained' in request.json  \
-        and 'handler' in request.json  \
+        and 'folder_path' in request.json  \
         and 'model_name' in request.json  \
         and 'hdfs_uri' in request.json:
             # Download files from HDFS
