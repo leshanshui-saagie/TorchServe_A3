@@ -15,68 +15,47 @@ application = Flask(__name__)
 
 @application.route('/config', methods=['POST'])
 def config():
-    json_available = False
-    # Directly pretrained 
+    # Read file paths from Json input
+    # Input as path of folder 
     if request.json \
-        and 'pretrained' in request.json  \
-        and 'handler' in request.json  \
-        and 'model_name' in request.json  \
-        and 'hdfs_uri' in request.json:
-            # Download files from HDFS
+    and 'folder_path' in request.json \
+    and 'model_name' in request.json \
+    and 'hdfs_uri' in request.json:
+        handler_file = request.json['folder_path'] +  "/handler.py"
+        model_file = request.json['folder_path'] +  "/model.py"
+        params_file = request.json['folder_path'] +  "/params.pt"
         model_name = request.json['model_name']
         hdfs_uri = request.json['hdfs_uri']
-        client_hdfs = InsecureClient(hdfs_uri)
-        handler_file = request.json['folder_path'] +  "/handler.py"
-        client_hdfs.download(handler_file, "./handler.py", overwrite=True)
-        logger.info('Download files: OK!!')
-        # Install library dependencies
-        response = os.popen("""torch-model-archiver --model-name %s --version 1.0 --handler ./handler.py && mv %s.mar /home/model-server/model-store/"""%(model_name, model_name)).read().strip()
-        json_available = True
-        logger.info('Uploaded model: %s'%model_name)
-    # Fine-tuned 
+    # Input as path of files 
+    elif request.json \
+    and 'hdfs_uri' in request.json \
+    and 'handler' in request.json  \
+    and 'params' in request.json \
+    and 'model' in request.json \
+    and 'model_name' in request.json:
+        handler_file = request.json['handler']
+        model_file = request.json['model']
+        params_file = request.json['params']
+        model_name = request.json['model_name']
+        hdfs_uri = request.json['hdfs_uri']
     else:
-        # Read file paths from Json input
-        # Input as path of folder 
-        if request.json \
-            and 'folder_path' in request.json \
-            and 'model_name' in request.json \
-            and 'hdfs_uri' in request.json:
-            handler_file = request.json['folder_path'] +  "/handler.py"
-            model_file = request.json['folder_path'] +  "/model.py"
-            params_file = request.json['folder_path'] +  "/params.pt"
-            model_name = request.json['model_name']
-            hdfs_uri = request.json['hdfs_uri']
-        # Input as path of files 
-        elif request.json \
-            and 'hdfs_uri' in request.json \
-            and 'handler' in request.json  \
-            and 'params' in request.json \
-            and 'model' in request.json \
-            and 'model_name' in request.json:
-            handler_file = request.json['handler']
-            model_file = request.json['model']
-            params_file = request.json['params']
-            model_name = request.json['model_name']
-            hdfs_uri = request.json['hdfs_uri']
-            
-        logger.info('Read json configurations: OK!!')
-        # Download files from HDFS
-        client_hdfs = InsecureClient(hdfs_uri)
-        client_hdfs.download(handler_file, "./handler.py", overwrite=True)
-        client_hdfs.download(model_file, "./model.py", overwrite=True)
-        client_hdfs.download(params_file, "./params.pt", overwrite=True)
-        logger.info('Download files: OK!!')
-        # Install library dependencies
-        response = os.popen(
-            """torch-model-archiver --model-name %s --version 1.0 --model-file ./model.py --serialized-file ./params.pt --handler ./handler.py && mv %s.mar /home/model-server/model-store/"""%(model_name, model_name)).read().strip()
-        current_app.hdfs_uri = hdfs_uri
-        current_app.configured = True
-        json_available = True
-        logger.info('Uploaded model: %s'%model_name)
-
-    if not(json_available):
         abort(400)
-
+        
+    logger.info('Read json configurations: OK!!')
+    
+    # Download files from HDFS
+    client_hdfs = InsecureClient(hdfs_uri)
+    client_hdfs.download(handler_file, "./handler.py", overwrite=True)
+    client_hdfs.download(model_file, "./model.py", overwrite=True)
+    client_hdfs.download(params_file, "./params.pt", overwrite=True)
+    logger.info('Download files: OK!!')
+    
+    # Install library dependencies
+    response = os.popen(
+        """torch-model-archiver --model-name %s --version 1.0 --model-file ./model.py --serialized-file ./params.pt --handler ./handler.py && mv %s.mar /home/model-server/model-store/"""%(model_name, model_name)).read().strip()
+    current_app.hdfs_uri = hdfs_uri
+    current_app.configured = True
+    logger.info('Uploaded model: %s'%model_name)
     return jsonify({'response': response}), 201
 
 
