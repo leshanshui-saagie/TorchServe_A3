@@ -29,8 +29,13 @@ def config():
         handler_file = request.json['folder_path'] +  "/handler.py"
         client_hdfs.download(handler_file, "./handler.py", overwrite=True)
         logger.info('Download files: OK!!')
+        # Make model archives
+        file_params = open('/'+'params.pt', 'w')
+        file_params.close()
+        file_model = open('/'+'model.py', 'w')
+        file_model.close()
+        response = os.popen("""torch-model-archiver --model-name %s --version 1.0 --model-file ./model.py --serialized-file ./params.pt --handler ./handler.py && mv %s.mar /home/model-server/model-store/"""%(model_name, model_name)).read().strip()
         # Install library dependencies
-        response = os.popen("""torch-model-archiver --model-name %s --version 1.0 --handler ./handler.py && mv %s.mar /home/model-server/model-store/"""%(model_name, model_name)).read().strip()
         json_available = True
         logger.info('Uploaded model: %s'%model_name)
     # Fine-tuned 
@@ -66,7 +71,7 @@ def config():
         client_hdfs.download(model_file, "./model.py", overwrite=True)
         client_hdfs.download(params_file, "./params.pt", overwrite=True)
         logger.info('Download files: OK!!')
-        # Install library dependencies
+        # Make model archives
         response = os.popen(
             """torch-model-archiver --model-name %s --version 1.0 --model-file ./model.py --serialized-file ./params.pt --handler ./handler.py && mv %s.mar /home/model-server/model-store/"""%(model_name, model_name)).read().strip()
         current_app.hdfs_uri = hdfs_uri
